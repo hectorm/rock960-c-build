@@ -1,0 +1,36 @@
+Protocol 2
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+
+Port 22
+ListenAddress 0.0.0.0
+
+UsePAM yes
+AllowGroups ssh-user
+PubkeyAuthentication yes
+PermitRootLogin no
+PasswordAuthentication yes # CHANGE ME!
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+TCPKeepAlive yes
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 1
+
+X11Forwarding no
+#X11Forwarding yes
+#X11DisplayOffset 10
+
+PrintMotd no
+PrintLastLog yes
+
+SyslogFacility AUTH
+LogLevel INFO
+
+Subsystem sftp internal-sftp
+#Match User www-data
+#	ChrootDirectory /var/www
+#	ForceCommand internal-sftp
+#	X11Forwarding no
+#	AllowTCPForwarding no
+#	PasswordAuthentication yes

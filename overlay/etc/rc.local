@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -eu
+
+if [ -x /etc/rc.firstrun ]; then
+	/etc/rc.firstrun >/var/log/rc-firstrun.log 2>&1 ||:
+	rm -fv /etc/rc.firstrun
+fi

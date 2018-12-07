@@ -1,0 +1,34 @@
+#!/bin/sh -x
+
+set -eu
+
+# Reset all iptables rules and enable UFW
+iptables --flush && iptables --zero
+ip6tables --flush && ip6tables --zero
+ufw --force enable
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 22/tcp # SSH
+ufw allow 8080/udp # WireGuard
+ufw reload
+
+# Regenerate SSH keys
+(cd /etc/ssh/ \
+	&& rm ./ssh_host_*key* \
+	&& ssh-keygen -t ed25519 -f ./ssh_host_ed25519_key -N '' < /dev/null \
+	&& ssh-keygen -t rsa -b 4096 -f ./ssh_host_rsa_key -N '' < /dev/null \
+)
+
+# Rebuild kernel scripts
+(cd /usr/src/linux-headers-"$(uname -r)"/ \
+	&& make scripts \
+)
+
+# Rebuild dkms modules
+dkms autoinstall
+
+# Generate WireGuard keys
+(cd /etc/wireguard/ \
+	&& (umask 077 && wg genkey > ./privatekey) \
+	&& wg pubkey < ./privatekey > ./publickey \
+)
