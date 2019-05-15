@@ -56,7 +56,7 @@ RUN mkdir -p /src/kernel/ && cd /src/kernel/ \
 
 # Clone u-boot
 ARG UBOOT_REMOTE=https://github.com/96rocks/u-boot.git
-ARG UBOOT_TREEISH=rock960-debian
+ARG UBOOT_TREEISH=stable-4.4-rock960
 RUN mkdir -p /src/u-boot/ && cd /src/u-boot/ \
 	&& git clone --no-checkout "${UBOOT_REMOTE}" ./ \
 	&& git checkout "${UBOOT_TREEISH}" \
@@ -71,8 +71,8 @@ RUN mkdir -p /src/rkbin/ && cd /src/rkbin/ \
 	&& git submodule update --recursive
 
 # Download Ubuntu Base rootfs
-ARG UBUNTU_BASE_URL=http://cdimage.ubuntu.com/ubuntu-base/releases/bionic/release/ubuntu-base-18.04.1-base-arm64.tar.gz
-ARG UBUNTU_BASE_CHECKSUM=6f465ec321b9d90e3e6627f337d187390c7ec828f861b4053e60c2a225b909fe
+ARG UBUNTU_BASE_URL=http://cdimage.ubuntu.com/ubuntu-base/releases/bionic/release/ubuntu-base-18.04.2-base-arm64.tar.gz
+ARG UBUNTU_BASE_CHECKSUM=62bd3b6df4340aa8e90d08229ced4f40aa8cbe84ed43f9f71791a46df5159f81
 RUN mkdir -p /src/ubuntu-base/rootfs/ && cd /src/ubuntu-base/ \
 	&& curl -o ./ubuntu-base.tar.gz "${UBUNTU_BASE_URL}" \
 	&& printf '%s  %s' "${UBUNTU_BASE_CHECKSUM}" ./ubuntu-base.tar.gz | sha256sum -c \
@@ -83,7 +83,7 @@ RUN mkdir -p /src/ubuntu-base/rootfs/ && cd /src/ubuntu-base/ \
 ARG DEFCONFIG=rockchip_linux_defconfig
 ENV DEFCONFIG="${DEFCONFIG}"
 
-ARG UBOOT_DEFCONFIG=evb-rk3399_defconfig
+ARG UBOOT_DEFCONFIG=rock960-c-rk3399_defconfig
 ENV UBOOT_DEFCONFIG="${UBOOT_DEFCONFIG}"
 
 ARG DTB=rock960-model-c-linux.dtb
@@ -98,6 +98,7 @@ ENV CROSS_COMPILE=aarch64-linux-gnu-
 # Apply patches
 COPY ./patches/ /src/patches/
 RUN cd /src/kernel/ && git apply -v /src/patches/kernel-*.patch
+RUN cd /src/u-boot/ && git apply -v /src/patches/u-boot-*.patch
 
 # Copy files
 COPY ./overlay/ /src/overlay/

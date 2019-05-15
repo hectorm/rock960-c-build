@@ -134,6 +134,12 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 	useradd --uid 1000 --gid 1000 --shell="$(command -v bash)" --create-home --groups sudo,ssh-user rock
 	printf 'rock:rock' | chpasswd # CHANGE ME!
 
+	# Fix permissions
+	chmod 600 -v /etc/NetworkManager/system-connections/* 2>/dev/null ||:
+	chmod 700 -v /etc/wireguard/ 2>/dev/null ||:
+	chmod 700 -v /etc/docker/ 2>/dev/null ||:
+	chmod 755 -v /usr/local/bin/* 2>/dev/null ||:
+
 	# Cleanup
 	rm -rf /var/lib/apt/lists/* /tmp/*
 	rm /usr/bin/qemu-aarch64-static

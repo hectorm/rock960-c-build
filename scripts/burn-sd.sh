@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eu
+
 TYPE="${1:?}"
 IMAGE="${2:?}"
 DEVICE="${3:?}"
