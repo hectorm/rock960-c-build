@@ -17,7 +17,7 @@ DOCKERFILE := $(MKFILE_DIR)/Dockerfile
 all: build
 
 .PHONY: build
-build: build-kernel build-u-boot build-rootfs build-system build-system-rootfs build-dist
+build: build-kernel build-u-boot build-rootfs build-system-all build-system-rootfs build-dist
 
 .PHONY: build-image
 build-image:
@@ -38,10 +38,10 @@ build-rootfs: build-image
 	docker run -ith rock --rm --mount type=volume,src='${DOCKER_VOLUME}',dst=/src/out/ --privileged \
 		'$(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG)' /src/scripts/build-rootfs.sh
 
-.PHONY: build-system
-build-system: build-image
+.PHONY: build-system-all
+build-system-all: build-image
 	docker run -ith rock --rm --mount type=volume,src='${DOCKER_VOLUME}',dst=/src/out/ \
-		'$(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG)' /src/scripts/build-system.sh
+		'$(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG)' /src/scripts/build-system-all.sh
 
 .PHONY: build-system-rootfs
 build-system-rootfs: build-image
@@ -56,7 +56,7 @@ build-dist: clean-dist
 		&& docker cp "$${ID}":/src/out/u-boot/ '$(DIST_DIR)' \
 		&& docker cp "$${ID}":/src/out/boot.img '$(DIST_DIR)' \
 		&& docker cp "$${ID}":/src/out/rootfs.img '$(DIST_DIR)' \
-		&& docker cp "$${ID}":/src/out/system.img '$(DIST_DIR)' \
+		&& docker cp "$${ID}":/src/out/system-all.img '$(DIST_DIR)' \
 		&& docker cp "$${ID}":/src/out/system-rootfs.img '$(DIST_DIR)' \
 		&& docker rm "$${ID}"
 

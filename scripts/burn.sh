@@ -10,7 +10,7 @@ DEVICE="${3:?}"
 abort() { >&2 printf -- '%s\n' "$@" && exit 1; }
 
 # Set number of blocks to skip
-if   [ "${TYPE}" = 'system'         ]; then SEEK=0
+if   [ "${TYPE}" = 'system-all'     ]; then SEEK=0
 elif [ "${TYPE}" = 'system-rootfs'  ]; then SEEK=0
 elif [ "${TYPE}" = 'loader1'        ]; then SEEK=64
 elif [ "${TYPE}" = 'loader2'        ]; then SEEK=16384
@@ -34,6 +34,6 @@ grow() {
 	growpart "${d}" "${n}"
 	resize2fs "${p}"
 }
-if   [ "${TYPE}" = 'system'         ]; then grow "${DEVICE}" 5
+if   [ "${TYPE}" = 'system-all'     ]; then grow "${DEVICE}" 5
 elif [ "${TYPE}" = 'system-rootfs'  ]; then grow "${DEVICE}" 1
 fi

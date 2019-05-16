@@ -2,7 +2,7 @@
 
 set -eu
 
-SYSTEM_IMG=/src/out/system.img
+SYSTEM_IMG=/src/out/system-all.img
 ROOTFS_IMG=/src/out/rootfs.img
 BOOT_IMG=/src/out/boot.img
 UBOOT_IMG=/src/out/u-boot/uboot.img
