@@ -68,9 +68,9 @@ gdisk "${SYSTEM_IMG}" <<-'EOF'
 EOF
 
 # Burn u-boot
-dd if="${IDBLOADER_IMG}" of=${SYSTEM_IMG} seek=${LOADER1_START} conv=notrunc
-dd if="${UBOOT_IMG}" of=${SYSTEM_IMG} seek=${LOADER2_START} conv=notrunc
-dd if="${TRUST_IMG}" of=${SYSTEM_IMG} seek=${ATF_START} conv=notrunc
+dd if="${IDBLOADER_IMG}" of="${SYSTEM_IMG}" seek="${LOADER1_START}" conv=notrunc
+dd if="${UBOOT_IMG}" of="${SYSTEM_IMG}" seek="${LOADER2_START}" conv=notrunc
+dd if="${TRUST_IMG}" of="${SYSTEM_IMG}" seek="${ATF_START}" conv=notrunc
 
 # Burn boot image
 dd if="${BOOT_IMG}" of="${SYSTEM_IMG}" conv=notrunc seek="${BOOT_START}"

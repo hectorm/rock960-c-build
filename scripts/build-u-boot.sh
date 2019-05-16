@@ -16,7 +16,7 @@ mkdir -p "${OUT_DIR}"/u-boot/
 
 RK3399_DDR_800MHZ_BIN=$(readlink -f "${RKBIN_DIR}"/bin/rk33/rk3399_ddr_800MHz_v[0-9].[0-9][0-9].bin)
 RK3399_MINILOADER_BIN=$(readlink -f "${RKBIN_DIR}"/bin/rk33/rk3399_miniloader_v[0-9].[0-9][0-9].bin)
-RK3399_BL31_BIN=$(readlink -f ${RKBIN_DIR}/bin/rk33/rk3399_bl31_v[0-9].[0-9][0-9].elf)
+RK3399_BL31_BIN=$(readlink -f "${RKBIN_DIR}"/bin/rk33/rk3399_bl31_v[0-9].[0-9][0-9].elf)
 
 # Package u-boot.bin into miniloader loadable format
 "${RKBIN_DIR}"/tools/loaderimage --pack --uboot "${UBOOT_DIR}"/u-boot-dtb.bin "${UBOOT_DIR}"/uboot.img 0x200000
