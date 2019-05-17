@@ -4,7 +4,6 @@ set -eu
 
 KERNEL_DIR=/src/kernel/
 KERNEL_VERSION=$(make -sC "${KERNEL_DIR}" kernelversion)
-BOOT_IMG=/src/out/boot.img
 OUT_DIR=/src/out/
 
 # Build kernel
@@ -16,13 +15,13 @@ OUT_DIR=/src/out/
 
 # Copy kernel image and device tree
 rm -rf "${OUT_DIR}"/kernel/
-mkdir -p "${OUT_DIR}"/kernel/
-cp "${KERNEL_DIR}"/arch/arm64/boot/Image "${OUT_DIR}"/kernel/vmlinuz-"${KERNEL_VERSION}"-"${BOARD}"
-cp "${KERNEL_DIR}"/arch/arm64/boot/dts/rockchip/"${DTB}" "${OUT_DIR}"/kernel/
+mkdir -p "${OUT_DIR}"/kernel/boot/
+cp "${KERNEL_DIR}"/arch/arm64/boot/Image "${OUT_DIR}"/kernel/boot/vmlinuz-"${KERNEL_VERSION}"-"${BOARD}"
+cp "${KERNEL_DIR}"/arch/arm64/boot/dts/rockchip/"${DTB}" "${OUT_DIR}"/kernel/boot/
 
 # Create extlinux config
-mkdir -p "${OUT_DIR}"/kernel/extlinux/
-cat > "${OUT_DIR}"/kernel/extlinux/extlinux.conf <<-EOF
+mkdir -p "${OUT_DIR}"/kernel/boot/extlinux/
+cat > "${OUT_DIR}"/kernel/boot/extlinux/extlinux.conf <<-EOF
 	LABEL kernel-${KERNEL_VERSION}-${BOARD}
 	    KERNEL /vmlinuz-${KERNEL_VERSION}-${BOARD}
 	    FDT /${DTB}
@@ -34,13 +33,13 @@ cat > "${OUT_DIR}"/kernel/extlinux/extlinux.conf <<-EOF
 EOF
 
 # Create boot image
-rm -f "${BOOT_IMG}"
-dd if=/dev/zero of="${BOOT_IMG}" bs=1M count=0 seek=100
-mkfs.vfat -n 'boot' "${BOOT_IMG}"
+rm -f "${OUT_DIR}"/kernel/boot.img
+dd if=/dev/zero of="${OUT_DIR}"/kernel/boot.img bs=1M count=0 seek=100
+mkfs.vfat -n 'boot' "${OUT_DIR}"/kernel/boot.img
 
 # Copy files
-mmd -i "${BOOT_IMG}" ::/extlinux
-mcopy -i "${BOOT_IMG}" -s "${OUT_DIR}"/kernel/* ::
+mmd -i "${OUT_DIR}"/kernel/boot.img ::/extlinux
+mcopy -i "${OUT_DIR}"/kernel/boot.img -s "${OUT_DIR}"/kernel/boot/* ::
 
 # Copy Debian packages
 mkdir -p "${OUT_DIR}"/kernel/debian/

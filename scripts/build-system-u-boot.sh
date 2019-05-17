@@ -2,8 +2,7 @@
 
 set -eu
 
-SYSTEM_IMG=/src/out/system-all.img
-ROOTFS_IMG=/src/out/rootfs.img
+SYSTEM_IMG=/src/out/system-u-boot.img
 BOOT_IMG=/src/out/kernel/boot.img
 UBOOT_IMG=/src/out/u-boot/u-boot.img
 IDBLOADER_IMG=/src/out/u-boot/idbloader.img
@@ -23,10 +22,8 @@ RESERVED2_START=$((RESERVED1_START + RESERVED1_SIZE))
 LOADER2_START=$((RESERVED2_START + RESERVED2_SIZE))
 ATF_START=$((LOADER2_START + LOADER2_SIZE))
 BOOT_START=$((ATF_START + ATF_SIZE))
-ROOTFS_START=$((BOOT_START + BOOT_SIZE))
 
-ROOTFS_IMG_SIZE=$(stat -L --format='%s' "${ROOTFS_IMG}")
-GPT_IMG_MIN_SIZE=$((ROOTFS_IMG_SIZE + (LOADER1_SIZE + RESERVED1_SIZE + RESERVED2_SIZE + LOADER2_SIZE + ATF_SIZE + BOOT_SIZE + 35) * 512))
+GPT_IMG_MIN_SIZE=$(((LOADER1_SIZE + RESERVED1_SIZE + RESERVED2_SIZE + LOADER2_SIZE + ATF_SIZE + BOOT_SIZE + 35) * 512))
 GPT_IMG_SIZE=$((GPT_IMG_MIN_SIZE / 1024 / 1024 + 2))
 
 # Create system image
@@ -39,9 +36,8 @@ parted -s "${SYSTEM_IMG}" -- unit s mkpart loader1 "${LOADER1_START}" "$((RESERV
 # parted -s "${SYSTEM_IMG}" -- unit s mkpart reserved2 "${RESERVED2_START}" "$((LOADER2_START - 1))"
 parted -s "${SYSTEM_IMG}" -- unit s mkpart loader2 "${LOADER2_START}" "$((ATF_START - 1))"
 parted -s "${SYSTEM_IMG}" -- unit s mkpart trust "${ATF_START}" "$((BOOT_START - 1))"
-parted -s "${SYSTEM_IMG}" -- unit s mkpart boot "${BOOT_START}" "$((ROOTFS_START - 1))"
+parted -s "${SYSTEM_IMG}" -- unit s mkpart boot "${BOOT_START}" 100%
 parted -s "${SYSTEM_IMG}" -- set 4 boot on
-parted -s "${SYSTEM_IMG}" -- unit s mkpart rootfs "${ROOTFS_START}" 100%
 
 # Set UUIDs
 gdisk "${SYSTEM_IMG}" <<-'EOF'
@@ -60,9 +56,6 @@ gdisk "${SYSTEM_IMG}" <<-'EOF'
 	c
 	4
 	2F0EA2CC-8A3E-8341-BDB2-A7898DDE41B2
-	c
-	5
-	B921B045-1DF0-41C3-AF44-4C6F280D3FAE
 	w
 	y
 EOF
@@ -74,6 +67,3 @@ dd if="${TRUST_IMG}" of="${SYSTEM_IMG}" seek="${ATF_START}" conv=notrunc
 
 # Burn boot image
 dd if="${BOOT_IMG}" of="${SYSTEM_IMG}" conv=notrunc seek="${BOOT_START}"
-
-# Burn rootfs image
-dd if="${ROOTFS_IMG}" of="${SYSTEM_IMG}" conv=notrunc,fsync seek="${ROOTFS_START}"

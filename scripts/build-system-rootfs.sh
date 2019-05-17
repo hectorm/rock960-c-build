@@ -15,8 +15,8 @@ GPT_IMG_SIZE=$((GPT_IMG_MIN_SIZE / 1024 / 1024 + 2))
 rm -rf "${SYSTEM_IMG}"
 dd if=/dev/zero of="${SYSTEM_IMG}" bs=1M count=0 seek="${GPT_IMG_SIZE}"
 
-parted -s "${SYSTEM_IMG}" mklabel gpt
-parted -s "${SYSTEM_IMG}" -- unit s mkpart rootfs "${ROOTFS_START}" -34s
+parted -s "${SYSTEM_IMG}" -- mklabel gpt
+parted -s "${SYSTEM_IMG}" -- unit s mkpart rootfs "${ROOTFS_START}" 100%
 
 # Set UUIDs
 gdisk "${SYSTEM_IMG}" <<-'EOF'
