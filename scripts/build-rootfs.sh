@@ -23,7 +23,7 @@ umount_chroot() {
 }
 
 # Copy overlay files
-cp -fdR --no-preserve=ownership "${OVERLAY_DIR}"/* "${CHROOT_DIR}"
+rsync -aAXv --exclude='*/.gitkeep' "${OVERLAY_DIR}"/ "${CHROOT_DIR}"/
 
 # Copy kernel packages
 cp -f "${OUT_DIR}"/kernel/debian/*.deb "${CHROOT_DIR}"/tmp/
@@ -38,22 +38,6 @@ trap '[ $? -eq 0 ] && exit; umount_chroot' EXIT
 # Setup chroot
 cat <<-'EOF' | chroot "${CHROOT_DIR}"
 	set -eu
-
-	# Set hostname
-	printf '%s' 'rock' > /etc/hostname
-	printf '%s\n' \
-		'127.0.0.1       localhost rock' \
-		'255.255.255.255 broadcasthost' \
-		'::1             localhost ip6-localhost ip6-loopback' \
-		'fe00::0         ip6-localnet' \
-		'ff00::0         ip6-mcastprefix' \
-		'ff02::1         ip6-allnodes' \
-		'ff02::2         ip6-allrouters' \
-		'ff02::3         ip6-allhosts' \
-		> /etc/hosts
-
-	# Set DNS servers
-	printf 'nameserver %s\n' '1.1.1.1' '1.0.0.1' > /etc/resolv.conf
 
 	# Install system packages
 	export DEBIAN_FRONTEND=noninteractive
@@ -111,20 +95,26 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 			wireless-tools \
 			wpasupplicant
 
+	# Fix some permissions
+	chmod 600 -v /etc/NetworkManager/system-connections/* 2>/dev/null ||:
+	chmod 755 -v /usr/local/bin/* 2>/dev/null ||:
+
 	# Install kernel packages
 	dpkg -i /tmp/linux-image-*.deb
 	dpkg -i /tmp/linux-headers-*.deb
 	apt install --fix-broken --assume-yes
 
 	# Install Docker
-	printf '%s' 'deb [arch=arm64] https://download.docker.com/linux/ubuntu/ bionic stable' > /etc/apt/sources.list.d/docker.list
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-	apt update && apt install --assume-yes docker-ce
+	printf '%s' "deb [arch=arm64] https://download.docker.com/linux/ubuntu/ $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+	apt-key adv --keyserver 'keyserver.ubuntu.com' --recv-keys '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+	apt update && apt install --assume-yes docker-ce docker-ce-cli containerd.io
+	chmod 700 -v /etc/docker/ 2>/dev/null ||:
 
 	# Install WireGuard
-	printf '%s' 'deb [arch=arm64] http://ppa.launchpad.net/wireguard/wireguard/ubuntu/ bionic main' > /etc/apt/sources.list.d/wireguard.list
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1B39B6EF6DDB96564797591AE33835F504A1A25
+	printf '%s' "deb [arch=arm64] http://ppa.launchpad.net/wireguard/wireguard/ubuntu/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/wireguard.list
+	apt-key adv --keyserver 'keyserver.ubuntu.com' --recv-keys 'E1B39B6EF6DDB96564797591AE33835F504A1A25'
 	apt update && apt install --assume-yes wireguard
+	chmod 700 -v /etc/wireguard/ 2>/dev/null ||:
 
 	# Create "ssh-user" group
 	groupadd --system ssh-user
@@ -133,12 +123,9 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 	groupadd --gid 1000 rock
 	useradd --uid 1000 --gid 1000 --shell="$(command -v bash)" --create-home --groups sudo,ssh-user rock
 	printf 'rock:rock' | chpasswd # CHANGE ME!
-
-	# Fix permissions
-	chmod 600 -v /etc/NetworkManager/system-connections/* 2>/dev/null ||:
-	chmod 700 -v /etc/wireguard/ 2>/dev/null ||:
-	chmod 700 -v /etc/docker/ 2>/dev/null ||:
-	chmod 755 -v /usr/local/bin/* 2>/dev/null ||:
+	cp -vaT /etc/skel/ /home/rock/
+	chmod 700 -v /home/rock/ /home/rock/.ssh/
+	chown rock:rock -vR /home/rock/
 
 	# Cleanup
 	rm -rf /var/lib/apt/lists/* /tmp/*

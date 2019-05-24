@@ -9,7 +9,7 @@ UsePAM yes
 AllowGroups ssh-user
 PubkeyAuthentication yes
 PermitRootLogin no
-PasswordAuthentication yes # CHANGE ME!
+PasswordAuthentication no
 PermitEmptyPasswords no
 ChallengeResponseAuthentication no
 TCPKeepAlive yes

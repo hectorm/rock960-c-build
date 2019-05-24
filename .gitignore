@@ -1,2 +1,6 @@
-/overlay/etc/NetworkManager/system-connections/
 /dist/
+
+# Overlay files
+/overlay/etc/NetworkManager/system-connections/*
+/overlay/home/*/.ssh/authorized_keys
+!/overlay/**/.gitkeep

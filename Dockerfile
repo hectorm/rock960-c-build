@@ -35,6 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 		python-dev \
 		python3-dev \
 		qemu-user-static \
+		rsync \
 		sudo \
 		swig \
 		udev \
@@ -98,7 +99,6 @@ ENV CROSS_COMPILE=aarch64-linux-gnu-
 # Apply patches
 COPY ./patches/ /src/patches/
 RUN cd /src/kernel/ && git apply -v /src/patches/kernel-*.patch
-RUN cd /src/u-boot/ && git apply -v /src/patches/u-boot-*.patch
 
 # Copy files
 COPY ./overlay/ /src/overlay/
