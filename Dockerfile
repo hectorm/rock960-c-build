@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM docker.io/ubuntu:18.04
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
