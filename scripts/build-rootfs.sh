@@ -72,6 +72,7 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 			htop \
 			iproute2 \
 			iputils-ping \
+			jq \
 			knot-dnsutils \
 			libcap2-bin \
 			libssl-dev \
@@ -79,6 +80,7 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 			moreutils \
 			mtr-tiny \
 			nano \
+			net-tools \
 			network-manager \
 			nvme-cli \
 			openresolv \
