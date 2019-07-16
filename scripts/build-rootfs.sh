@@ -121,7 +121,7 @@ cat <<-'EOF' | chroot "${CHROOT_DIR}"
 
 	# Create "rock" user
 	groupadd --gid 1000 rock
-	useradd --uid 1000 --gid 1000 --shell="$(command -v bash)" --create-home --groups sudo,ssh-user rock
+	useradd --uid 1000 --gid 1000 --shell "$(command -v bash)" --create-home --groups sudo,ssh-user rock
 	printf 'rock:rock' | chpasswd # CHANGE ME!
 	cp -vaT /etc/skel/ /home/rock/
 	chmod 700 -v /home/rock/ /home/rock/.ssh/
