@@ -72,8 +72,8 @@ RUN mkdir -p /src/rkbin/ && cd /src/rkbin/ \
 	&& git submodule update --recursive
 
 # Download Ubuntu Base rootfs
-ARG UBUNTU_BASE_URL=http://cdimage.ubuntu.com/ubuntu-base/releases/bionic/release/ubuntu-base-18.04.2-base-arm64.tar.gz
-ARG UBUNTU_BASE_CHECKSUM=62bd3b6df4340aa8e90d08229ced4f40aa8cbe84ed43f9f71791a46df5159f81
+ARG UBUNTU_BASE_URL=http://cdimage.ubuntu.com/ubuntu-base/releases/bionic/release/ubuntu-base-18.04.3-base-arm64.tar.gz
+ARG UBUNTU_BASE_CHECKSUM=9193fd5f648e12c2102326ee6fdc69ac59c490fac3eb050758cee01927612021
 RUN mkdir -p /src/ubuntu-base/rootfs/ && cd /src/ubuntu-base/ \
 	&& curl -o ./ubuntu-base.tar.gz "${UBUNTU_BASE_URL}" \
 	&& printf '%s  %s' "${UBUNTU_BASE_CHECKSUM}" ./ubuntu-base.tar.gz | sha256sum -c \
