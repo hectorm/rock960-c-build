@@ -2,9 +2,9 @@
 
 set -eu
 
-TYPE="${1:?}"
-IMAGE="${2:?}"
-DEVICE="${3:?}"
+TYPE=${1:?}
+IMAGE=${2:?}
+DEVICE=${3:?}
 
 # Print to stderr and exit
 abort() { >&2 printf -- '%s\n' "$@" && exit 1; }

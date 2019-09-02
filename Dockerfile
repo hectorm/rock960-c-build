@@ -82,16 +82,16 @@ RUN mkdir -p /src/ubuntu-base/rootfs/ && cd /src/ubuntu-base/ \
 
 # Set board config
 ARG DEFCONFIG=rockchip_linux_defconfig
-ENV DEFCONFIG="${DEFCONFIG}"
+ENV DEFCONFIG=${DEFCONFIG}
 
 ARG UBOOT_DEFCONFIG=rock960-c-rk3399_defconfig
-ENV UBOOT_DEFCONFIG="${UBOOT_DEFCONFIG}"
+ENV UBOOT_DEFCONFIG=${UBOOT_DEFCONFIG}
 
 ARG DTB=rock960-model-c-linux.dtb
-ENV DTB="${DTB}"
+ENV DTB=${DTB}
 
 ARG BOARD=rock960c
-ENV BOARD="${BOARD}"
+ENV BOARD=${BOARD}
 
 ENV ARCH=arm64
 ENV CROSS_COMPILE=aarch64-linux-gnu-
