@@ -1,4 +1,8 @@
-FROM docker.io/ubuntu:18.04
+##################################################
+## "prepare" stage
+##################################################
+
+FROM docker.io/ubuntu:18.04 AS prepare
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -41,11 +45,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 		udev \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Set locale
-RUN locale-gen en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
+# Setup locale
+RUN printf '%s\n' 'en_US.UTF-8 UTF-8' > /etc/locale.gen
+RUN localedef -c -i en_US -f UTF-8 en_US.UTF-8 ||:
+ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 # Clone kernel
 ARG KERNEL_REMOTE=https://github.com/96rocks/kernel.git
